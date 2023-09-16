@@ -12,9 +12,9 @@ let ballradius = 10
 let num = 0
 //ray related
 let viscone = Math.PI*2
-let radius = cnvmeasures*2
+let radius = cnvmeasures*3
 let angle = 0
-let raynum = 180
+let raynum = 2160
 let angchange = viscone/raynum
 //ray intersection
 let intersect = []
@@ -28,6 +28,7 @@ let t = 0
 function walls(){
     for(let i = 0; i < wallnum ; ++i){
         ctx.beginPath()
+        ctx.globalAlpha = 1
         x = Math.floor(Math.random()*500)
         y = Math.floor(Math.random()*500)
         wall.push([x,y])
@@ -46,6 +47,7 @@ walls()
 function maintain(){
     for(let i = 0; i < wall.length ; i += 2){
         ctx.beginPath()
+        ctx.globalAlpha = 1
         ctx.moveTo(wall[i][0],wall[i][1])
         ctx.lineTo(wall[i+1][0],wall[i+1][1])
         ctx.strokeStyle = 'red'
@@ -64,7 +66,7 @@ ball()
 function rays(){
     for(let i = 0; i < raynum ; ++i){
         ctx.beginPath()
-        ctx.globalAlpha = 0.5
+        ctx.globalAlpha = 0.1
         ctx.strokeStyle = 'white'
         ctx.moveTo(ballcoords[0],ballcoords[1])
         for(let i = 0; i < wall.length ; i += 2){
@@ -73,12 +75,15 @@ function rays(){
         }
         arr = [[0,0],[cnvmeasures,0]]
         raycollision()
-        arr = [[0,cnvmeasures],[cnvmeasures,cnvmeasures]]
+        arr = [[cnvmeasures,0],[cnvmeasures,cnvmeasures]]
         raycollision()
-        arr = [[cnvmeasures,cnvmeasures],[cnvmeasures,0]]
+        arr = [[cnvmeasures,cnvmeasures],[0,cnvmeasures]]
         raycollision()
         arr = [[0,cnvmeasures],[0,0]]
         raycollision()
+        if(pos.length == 0){
+            pos = [ballcoords[0] + radius*Math.cos(angle), ballcoords[1] + radius*Math.sin(angle)]
+        }
         ctx.lineTo(pos[0],pos[1])
         ctx.stroke()
         intersect = []
@@ -106,7 +111,7 @@ function raycollision(){
         x = ((x1*y2-y1*x2)*(x3-x4) - (x1-x2)*(x3*y4-y3*x4)) / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4))
         y = ((x1*y2-y1*x2)*(y3-y4) - (y1-y2)*(x3*y4-y3*x4)) / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4))
         intersect.push([x, y])
-        }
+    }
     //make the ray stop at the closest line if it intersects many
     let min = cnvmeasures
     if(intersect.length > 0){
@@ -115,7 +120,7 @@ function raycollision(){
             let dist = Math.sqrt(Math.pow(intersect[i][0]-ballcoords[0],2)+Math.pow(intersect[i][1]-ballcoords[1],2))
             if(dist < min){
                 min = dist
-                pos = intersect[i]
+                pos = intersect[i]     
             }
         }
     }
